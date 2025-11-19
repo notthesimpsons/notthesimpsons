@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NotFreeSimpsons</title>
+  <style>
+    body {
+      background: #1a1a1a;
+      color: white;
+      font-family: Arial;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 32px;
+    }
+    #player {
+      width: 90%;
+      max-width: 900px;
+      height: 500px;
+      background: black;
+      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #ffcc00;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+  </style>
+</head>
+<body>
+  <h1>NotFreeSimpsons</h1>
+
+  <div>
+    <select id="seasonSelect"></select>
+    <select id="episodeSelect"></select>
+    <button onclick="loadSelected()">Load Episode</button>
+  </div>
+
+  <iframe id="player" allowfullscreen></iframe>
+
+  <div>
+    <button onclick="prevEpisode()">Prev Episode</button>
+    <button onclick="nextEpisode()">Next Episode</button>
+  </div>
+
+<script>
+  const showId = 456; // Simpsons TMDB ID
+  const maxSeasons = 37;
+  const maxEpisodesPerSeason = 25; // adjust if needed
+
+  const seasonSelect = document.getElementById("seasonSelect");
+  const episodeSelect = document.getElementById("episodeSelect");
+  const player = document.getElementById("player");
+
+  function init() {
+    for (let s = 1; s <= maxSeasons; s++) {
+      const opt = document.createElement("option");
+      opt.value = s;
+      opt.textContent = `Season ${s}`;
+      seasonSelect.appendChild(opt);
+    }
+    loadEpisodes(1);
+  }
+
+  function loadEpisodes(season) {
+    episodeSelect.innerHTML = "";
+    for (let e = 1; e <= maxEpisodesPerSeason; e++) {
+      const opt = document.createElement("option");
+      opt.value = e;
+      opt.textContent = `Episode ${e}`;
+      episodeSelect.appendChild(opt);
+    }
+  }
+
+  seasonSelect.addEventListener("change", () => {
+    loadEpisodes(seasonSelect.value);
+  });
+
+  function loadSelected() {
+    const s = seasonSelect.value;
+    const e = episodeSelect.value;
+    const url = `https://vidlink.pro/tv/${showId}/${s}/${e}`;
+    player.src = url;
+  }
+
+  function nextEpisode() {
+    let s = Number(seasonSelect.value);
+    let e = Number(episodeSelect.value);
+
+    e++;
+    if (e > maxEpisodesPerSeason) {
+      e = 1;
+      s++;
+      if (s > maxSeasons) return;
+      seasonSelect.value = s;
+      loadEpisodes(s);
+    }
+
+    episodeSelect.value = e;
+    loadSelected();
+  }
+
+  function prevEpisode() {
+    let s = Number(seasonSelect.value);
+    let e = Number(episodeSelect.value);
+
+    e--;
+    if (e < 1) {
+      s--;
+      if (s < 1) return;
+      seasonSelect.value = s;
+      loadEpisodes(s);
+      e = maxEpisodesPerSeason;
+    }
+
+    episodeSelect.value = e;
+    loadSelected();
+  }
+
+  init();
+</script>
+
+</body>
+</html>
