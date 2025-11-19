@@ -1,472 +1,140 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>notfreesimpsons — Episode Browser</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#0f1724; --card:#0b1220; --muted:#9aa6be; --accent:#ffcc33;
-    --glass: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-  body{margin:0;background:linear-gradient(180deg,#071027 0%, #081022 60%);color:#e6eef8;min-height:100vh;display:flex;flex-direction:column;gap:18px;padding:20px;}
-  header{display:flex;align-items:center;gap:16px;}
-  .logo{display:flex;flex-direction:column;}
-  .brand{font-weight:800;letter-spacing:0.6px;font-size:20px;}
-  .subtitle{color:var(--muted);font-size:13px;margin-top:2px;}
-  .controls{margin-left:auto;display:flex;gap:10px;align-items:center;}
-  input,select,button{background:var(--card);border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;color:inherit;}
-  button{cursor:pointer}
-  .container{display:grid;grid-template-columns:420px 1fr;gap:18px;align-items:start;}
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6);}
-  .left{height:calc(100vh - 140px);overflow:auto;}
-  .search-row{display:flex;gap:8px;margin-bottom:10px;}
-  .show-info{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-  .poster{width:84px;height:126px;border-radius:8px;flex-shrink:0;background:#071227;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;}
-  .meta{flex:1}
-  .meta h2{margin:0 0 6px 0;font-size:16px}
-  .meta .muted{color:var(--muted);font-size:13px}
-  .list{display:grid;gap:8px}
-  .season-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-  .season-btn{padding:6px 8px;border-radius:8px;font-weight:600;background:transparent;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
-  .season-btn.active{background:linear-gradient(90deg, rgba(255,204,51,0.12), rgba(255,204,51,0.06));border-color:rgba(255,204,51,0.16);color:var(--accent)}
-  .episode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .ep-card{display:flex;gap:8px;padding:8px;border-radius:8px;align-items:center;background:var(--glass);cursor:pointer}
-  .ep-card.active{outline:2px solid rgba(255,204,51,0.14)}
-  .ep-thumb{width:96px;height:54px;border-radius:6px;background:#071227;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
-  .ep-title{font-size:13px;margin:0}
-  .ep-sub{color:var(--muted);font-size:12px;margin-top:4px}
-  .right{display:flex;flex-direction:column;gap:12px}
-  .player-wrap{background:#000;border-radius:10px;padding:10px;min-height:320px;display:flex;flex-direction:column;gap:8px}
-  .iframe-holder{flex:1;background:#000;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  iframe{width:100%;height:100%;border:0;display:block}
-  .player-controls{display:flex;gap:8px;align-items:center}
-  .big-btn{padding:10px 14px;border-radius:10px;font-weight:700}
-  .toggles{display:flex;gap:8px;align-items:center;margin-left:auto;color:var(--muted);font-size:13px}
-  .episode-meta{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px;border-radius:8px}
-  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
-  .hint{color:var(--muted);font-size:12px;margin-top:6px}
-  @media (max-width:980px){
-    .container{grid-template-columns:1fr; }
-    .left{order:2}
-    .right{order:1}
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>NotFreeSimpsons</title>
+  <style>
+    body {
+      background: #1a1a1a;
+      color: white;
+      font-family: Arial;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 32px;
+    }
+    #player {
+      width: 90%;
+      max-width: 900px;
+      height: 500px;
+      background: black;
+      margin-top: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background: #ffcc00;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="logo">
-    <div class="brand">notfreesimpsons</div>
-    <div class="subtitle">TMDB-driven episode browser — uses vidlink.pro embed format</div>
+  <h1>NotFreeSimpsons</h1>
+
+  <div>
+    <select id="seasonSelect"></select>
+    <select id="episodeSelect"></select>
+    <button onclick="loadSelected()">Load Episode</button>
   </div>
 
-  <div class="controls">
-    <div style="display:flex;gap:8px;align-items:center">
-      <label style="font-size:13px;color:var(--muted)">TMDB Key:</label>
-      <input id="tmdb-key" placeholder="Paste TMDB API key (v3/v4 read)" style="width:240px" />
-    </div>
+  <iframe id="player" sandbox="allow-scripts allow-same-origin"</iframe>
+
+  <div>
+    <button onclick="prevEpisode()">Prev Episode</button>
+    <button onclick="nextEpisode()">Next Episode</button>
   </div>
-</header>
-
-<div class="container">
-  <aside class="panel left">
-    <div class="search-row">
-      <input id="show-search" placeholder="Search shows (e.g. The Simpsons)" />
-      <button id="search-btn">Search</button>
-      <input id="manual-id" placeholder="Or paste TMDB show id" style="width:120px" />
-      <button id="load-id">Load</button>
-    </div>
-
-    <div id="show-area" style="display:none">
-      <div class="show-info">
-        <div class="poster" id="show-poster">No poster</div>
-        <div class="meta">
-          <h2 id="show-title">—</h2>
-          <div class="muted" id="show-sub">Seasons: — • Episodes: —</div>
-          <div class="hint">Tip: if you already know TMDB id, paste it (fast). Otherwise search and pick the show.</div>
-        </div>
-      </div>
-
-      <div class="season-row" id="season-row"></div>
-
-      <div class="list">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:700">Episodes</div>
-          <div class="muted" id="episode-count">—</div>
-        </div>
-        <div class="episode-grid" id="episode-grid"></div>
-      </div>
-    </div>
-
-    <div id="search-results" style="display:none">
-      <div style="font-weight:700;margin-bottom:8px">Search results</div>
-      <div id="results-list" style="display:grid;gap:8px"></div>
-    </div>
-  </aside>
-
-  <main class="panel right">
-    <div class="player-wrap">
-      <div style="display:flex;gap:12px;align-items:center">
-        <div style="font-weight:800" id="player-title">No episode loaded</div>
-        <div class="toggles">
-          <label><input type="checkbox" id="auto-advance" /> Auto-advance</label>
-          <label style="margin-left:8px"><input type="checkbox" id="use-runtime" checked/> Use runtime</label>
-        </div>
-      </div>
-
-      <div class="iframe-holder" id="iframe-holder">
-        <div style="color:var(--muted);text-align:center;padding:18px">
-          <div style="font-weight:700">Embed preview</div>
-          <div style="margin-top:8px">Select an episode to load the vidlink player using TMDB → vidlink URL format</div>
-          <div class="hint" style="margin-top:10px">Embed URL will be: <code>https://vidlink.pro/tv/&lt;tmdb_id&gt;/&lt;season&gt;/&lt;episode&gt;</code></div>
-        </div>
-      </div>
-
-      <div class="player-controls">
-        <button id="prev-btn" class="big-btn">⟵ Prev</button>
-        <button id="next-btn" class="big-btn">Next ⟶</button>
-        <div style="margin-left:8px;color:var(--muted)">
-          <label>Advance delay (sec): <input id="advance-delay" type="number" value="5" style="width:80px;padding:6px;border-radius:8px"/></label>
-        </div>
-        <div style="margin-left:auto;color:var(--muted)">Keyboard: ←/→ prev/next</div>
-      </div>
-    </div>
-
-    <div class="episode-meta" id="episode-meta" style="display:none">
-      <div id="ep-overview"></div>
-      <div style="margin-top:8px;color:var(--muted)" id="meta-line"></div>
-    </div>
-
-  </main>
-</div>
-
-<footer>
-  Made for browsing TV episodes using TMDB metadata and embedding vidlink.pro — enjoy.
-</footer>
 
 <script>
-/*
-  notfreesimpsons.html
-  - Put your TMDB API key into the TMDB_API_KEY input at top (or set it via prompt)
-  - Search for "The Simpsons" or paste a TMDB show id and click Load
-  - The embed URL used: https://vidlink.pro/tv/{tmdb_id}/{season_number}/{episode_number}
-  Notes:
-  - Cross-origin iframes cannot reliably emit 'ended' events to the parent page, so the page uses the episode runtime (from TMDB)
-    plus an offset to auto-advance when "Use runtime" is ON. You can also enable auto-advance and set a manual delay.
-*/
-let TMDB_API_KEY = "";
-const tmdbKeyInput = document.getElementById('tmdb-key');
-tmdbKeyInput.addEventListener('change', ()=> TMDB_API_KEY = tmdbKeyInput.value.trim());
+  const showId = 456; // Simpsons TMDB ID
+  const maxSeasons = 37;
+  const maxEpisodesPerSeason = 25; // adjust if needed
 
-const searchBtn = document.getElementById('search-btn');
-const showSearch = document.getElementById('show-search');
-const resultsList = document.getElementById('results-list');
-const searchResults = document.getElementById('search-results');
+  const seasonSelect = document.getElementById("seasonSelect");
+  const episodeSelect = document.getElementById("episodeSelect");
+  const player = document.getElementById("player");
 
-const manualId = document.getElementById('manual-id');
-const loadIdBtn = document.getElementById('load-id');
-
-const showArea = document.getElementById('show-area');
-const showPoster = document.getElementById('show-poster');
-const showTitle = document.getElementById('show-title');
-const showSub = document.getElementById('show-sub');
-const seasonRow = document.getElementById('season-row');
-const episodeGrid = document.getElementById('episode-grid');
-const episodeCount = document.getElementById('episode-count');
-
-const iframeHolder = document.getElementById('iframe-holder');
-const playerTitle = document.getElementById('player-title');
-const epOverview = document.getElementById('ep-overview');
-const metaLine = document.getElementById('meta-line');
-const episodeMeta = document.getElementById('episode-meta');
-
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const autoAdvance = document.getElementById('auto-advance');
-const useRuntime = document.getElementById('use-runtime');
-const advanceDelayInput = document.getElementById('advance-delay');
-
-let state = {
-  show: null, // TMDB show object
-  tmdbId: null,
-  seasons: [],
-  currentSeason: null,
-  currentEpisode: null,
-  episodesBySeason: {},
-  autoTimer: null
-};
-
-// UTIL: TMDB fetch wrapper
-async function tmdbFetch(path) {
-  if (!TMDB_API_KEY) {
-    TMDB_API_KEY = tmdbKeyInput.value.trim();
-    if (!TMDB_API_KEY) return Promise.reject('TMDB API key required in the top-right input.');
-  }
-  const base = 'https://api.themoviedb.org/3';
-  const url = base + path + (path.includes('?') ? '&' : '?') + 'api_key=' + encodeURIComponent(TMDB_API_KEY);
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('TMDB error: ' + r.status + ' ' + r.statusText);
-  return r.json();
-}
-
-// Search shows by name
-searchBtn.addEventListener('click', async ()=>{
-  resultsList.innerHTML = ''; searchResults.style.display='block';
-  try {
-    const q = encodeURIComponent(showSearch.value.trim());
-    const data = await tmdbFetch('/search/tv?query=' + q);
-    if (!data.results || data.results.length===0) {
-      resultsList.innerHTML = '<div class="muted">No results</div>'; return;
+  function init() {
+    for (let s = 1; s <= maxSeasons; s++) {
+      const opt = document.createElement("option");
+      opt.value = s;
+      opt.textContent = `Season ${s}`;
+      seasonSelect.appendChild(opt);
     }
-    data.results.slice(0,12).forEach(show => {
-      const el = document.createElement('div');
-      el.style.display='flex'; el.style.alignItems='center'; el.style.justifyContent='space-between';
-      el.style.background='rgba(255,255,255,0.02)'; el.style.padding='8px'; el.style.borderRadius='8px';
-      const left = document.createElement('div'); left.style.display='flex'; left.style.gap='10px'; left.style.alignItems='center';
-      const img = document.createElement('img'); img.src = show.poster_path ? 'https://image.tmdb.org/t/p/w92'+show.poster_path : '';
-      img.style.width='48px'; img.style.height='72px'; img.style.objectFit='cover'; img.style.borderRadius='6px';
-      const meta = document.createElement('div'); meta.innerHTML = '<div style="font-weight:700">'+show.name+'</div><div style="color:var(--muted)">'+(show.first_air_date||'')+'</div>';
-      left.appendChild(img); left.appendChild(meta);
-      const btn = document.createElement('button'); btn.textContent='Load'; btn.onclick = ()=> loadShowById(show.id);
-      el.appendChild(left); el.appendChild(btn);
-      resultsList.appendChild(el);
-    });
-  } catch(e){
-    resultsList.innerHTML = '<div style="color:#f88">Error: '+String(e)+'</div>';
+    loadEpisodes(1);
   }
-});
 
-loadIdBtn.addEventListener('click', ()=> {
-  const id = manualId.value.trim();
-  if (!id) return alert('Paste a TMDB show ID in the field and press Load.');
-  loadShowById(id);
-});
-
-async function loadShowById(id){
-  try {
-    const show = await tmdbFetch('/tv/' + id);
-    state.show = show; state.tmdbId = id;
-    showArea.style.display='block'; searchResults.style.display='none';
-    renderShowHeader(show);
-    // gather seasons
-    state.seasons = show.seasons ? show.seasons.map(s=>s.season_number) : [];
-    // prefetch seasons basic metadata but episodes will be individually fetched when selected
-    renderSeasons();
-    // default to season 1 or last season with episodes
-    const defaultSeason = state.seasons.includes(1) ? 1 : (state.seasons[state.seasons.length-1] || 1);
-    await loadSeason(defaultSeason);
-  } catch(e){
-    alert('Failed to load show: ' + e);
-    console.error(e);
+  function loadEpisodes(season) {
+    episodeSelect.innerHTML = "";
+    for (let e = 1; e <= maxEpisodesPerSeason; e++) {
+      const opt = document.createElement("option");
+      opt.value = e;
+      opt.textContent = `Episode ${e}`;
+      episodeSelect.appendChild(opt);
+    }
   }
-}
 
-function renderShowHeader(show){
-  showPoster.textContent = '';
-  if (show.poster_path) {
-    showPoster.style.backgroundImage = `url(https://image.tmdb.org/t/p/w300${show.poster_path})`;
-    showPoster.style.backgroundSize='cover';
-    showPoster.style.backgroundPosition='center';
-  } else {
-    showPoster.style.backgroundImage = '';
-    showPoster.textContent = 'No poster';
-  }
-  showTitle.textContent = show.name + (show.number_of_seasons ? ` (TMDB id ${show.id})` : '');
-  showSub.textContent = `Seasons: ${show.number_of_seasons || '—'} • Episodes: ${show.number_of_episodes || '—'}`;
-}
-
-// render season buttons
-function renderSeasons(){
-  seasonRow.innerHTML = '';
-  state.seasons.forEach(snum=>{
-    const b = document.createElement('button');
-    b.className = 'season-btn' + (state.currentSeason===snum ? ' active' : '');
-    b.textContent = 'Season ' + snum;
-    b.onclick = ()=> loadSeason(snum);
-    seasonRow.appendChild(b);
+  seasonSelect.addEventListener("change", () => {
+    loadEpisodes(seasonSelect.value);
   });
-}
 
-// load episodes for a season
-async function loadSeason(seasonNumber){
-  if (!state.tmdbId) return;
-  try {
-    state.currentSeason = seasonNumber;
-    renderSeasons();
-    // fetch season details
-    const seasonData = await tmdbFetch(`/tv/${state.tmdbId}/season/${seasonNumber}`);
-    state.episodesBySeason[seasonNumber] = seasonData.episodes || [];
-    renderEpisodeGrid(seasonNumber);
-  } catch(e){
-    alert('Failed to load season: ' + e);
-    console.error(e);
+  function loadSelected() {
+    const s = seasonSelect.value;
+    const e = episodeSelect.value;
+    const url = `https://vidlink.pro/tv/${showId}/${s}/${e}`;
+    player.src = url;
   }
-}
 
-function renderEpisodeGrid(seasonNumber){
-  episodeGrid.innerHTML = '';
-  const episodes = state.episodesBySeason[seasonNumber] || [];
-  episodeCount.textContent = episodes.length + ' episodes';
-  episodes.forEach(ep=>{
-    const card = document.createElement('div'); card.className='ep-card';
-    if (state.currentEpisode && state.currentEpisode.season===seasonNumber && state.currentEpisode.episode_number===ep.episode_number) card.classList.add('active');
-    const thumb = document.createElement('div'); thumb.className='ep-thumb';
-    if (ep.still_path) {
-      const img = document.createElement('img'); img.src = 'https://image.tmdb.org/t/p/w300'+ep.still_path;
-      img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; img.style.borderRadius='6px';
-      thumb.textContent=''; thumb.appendChild(img);
-    } else {
-      thumb.textContent = 'No image';
+  function nextEpisode() {
+    let s = Number(seasonSelect.value);
+    let e = Number(episodeSelect.value);
+
+    e++;
+    if (e > maxEpisodesPerSeason) {
+      e = 1;
+      s++;
+      if (s > maxSeasons) return;
+      seasonSelect.value = s;
+      loadEpisodes(s);
     }
-    const tmeta = document.createElement('div');
-    const t = document.createElement('div'); t.className='ep-title'; t.innerText = `${ep.episode_number}. ${ep.name || '—'}`;
-    const s = document.createElement('div'); s.className='ep-sub'; s.innerText = (ep.air_date ? ep.air_date + ' • ' : '') + (ep.runtime ? ep.runtime + ' min' : (ep.runtime===0?'—':'')) ;
-    tmeta.appendChild(t); tmeta.appendChild(s);
 
-    card.appendChild(thumb); card.appendChild(tmeta);
-    card.onclick = ()=> playEpisode(seasonNumber, ep.episode_number);
-    episodeGrid.appendChild(card);
-  });
-}
-
-// embed vidlink url
-function buildEmbedUrl(tmdbId, season, episode){
-  // user requested format: /tv/{tmdb}/{season}/{episode}
-  // we'll use https://vidlink.pro/tv/<tmdb>/<season>/<episode>
-  return `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`;
-}
-
-function loadIFrame(url){
-  iframeHolder.innerHTML = '';
-  const ifr = document.createElement('iframe');
-  ifr.src = url;
-  ifr.allow = 'autoplay; fullscreen; picture-in-picture';
-  ifr.loading = 'lazy';
-  iframeHolder.appendChild(ifr);
-}
-
-// play an episode: load iframe and show metadata
-async function playEpisode(seasonNumber, episodeNumber){
-  state.currentEpisode = { season: seasonNumber, episode_number: episodeNumber };
-  // highlight active ep
-  Array.from(document.querySelectorAll('.ep-card')).forEach(el => el.classList.remove('active'));
-  // re-render grid to show active
-  renderEpisodeGrid(seasonNumber);
-
-  playerTitle.textContent = `S${String(seasonNumber).padStart(2,'0')} · E${String(episodeNumber).padStart(2,'0')}`;
-  // fetch episode details for overview and runtime
-  try {
-    const epData = await tmdbFetch(`/tv/${state.tmdbId}/season/${seasonNumber}/episode/${episodeNumber}`);
-    epOverview.textContent = epData.overview || '';
-    metaLine.textContent = `Air date: ${epData.air_date || '—'} • Runtime: ${epData.runtime ? epData.runtime + ' min' : (epData.runtime===0?'—':'unknown')}`;
-    episodeMeta.style.display = 'block';
-    // build and load embed
-    const url = buildEmbedUrl(state.tmdbId, seasonNumber, episodeNumber);
-    loadIFrame(url);
-
-    // schedule auto-advance if enabled
-    scheduleAutoAdvance(epData.runtime);
-  } catch(e){
-    console.error('Failed to fetch episode data', e);
-    // fallback: still load iframe
-    const url = buildEmbedUrl(state.tmdbId, seasonNumber, episodeNumber);
-    loadIFrame(url);
-    episodeMeta.style.display = 'none';
-    scheduleAutoAdvance(null);
+    episodeSelect.value = e;
+    loadSelected();
   }
-}
 
-// compute next/prev
-function goNext(){
-  if (!state.currentEpisode) return;
-  const s = state.currentEpisode.season;
-  const e = state.currentEpisode.episode_number;
-  const episodes = state.episodesBySeason[s] || [];
-  const idx = episodes.findIndex(x=>x.episode_number===e);
-  if (idx >= 0 && idx < episodes.length - 1) {
-    playEpisode(s, episodes[idx+1].episode_number);
-  } else {
-    // try next season
-    const seasonIdx = state.seasons.indexOf(s);
-    if (seasonIdx >= 0 && seasonIdx < state.seasons.length - 1) {
-      const nextSeason = state.seasons[seasonIdx+1];
-      loadSeason(nextSeason).then(()=> {
-        const nextEpisodes = state.episodesBySeason[nextSeason] || [];
-        if (nextEpisodes.length) playEpisode(nextSeason, nextEpisodes[0].episode_number);
-      });
-    } else {
-      // end of show
-      console.log('Reached end of available episodes');
+  function prevEpisode() {
+    let s = Number(seasonSelect.value);
+    let e = Number(episodeSelect.value);
+
+    e--;
+    if (e < 1) {
+      s--;
+      if (s < 1) return;
+      seasonSelect.value = s;
+      loadEpisodes(s);
+      e = maxEpisodesPerSeason;
     }
+
+    episodeSelect.value = e;
+    loadSelected();
   }
-}
-function goPrev(){
-  if (!state.currentEpisode) return;
-  const s = state.currentEpisode.season;
-  const e = state.currentEpisode.episode_number;
-  const episodes = state.episodesBySeason[s] || [];
-  const idx = episodes.findIndex(x=>x.episode_number===e);
-  if (idx > 0) {
-    playEpisode(s, episodes[idx-1].episode_number);
-  } else {
-    const seasonIdx = state.seasons.indexOf(s);
-    if (seasonIdx > 0) {
-      const prevSeason = state.seasons[seasonIdx-1];
-      loadSeason(prevSeason).then(()=> {
-        const prevEpisodes = state.episodesBySeason[prevSeason] || [];
-        if (prevEpisodes.length) playEpisode(prevSeason, prevEpisodes[prevEpisodes.length-1].episode_number);
-      });
-    } else {
-      console.log('At first episode');
-    }
-  }
-}
 
-prevBtn.addEventListener('click', ()=> {
-  clearAutoTimer(); goPrev();
-});
-nextBtn.addEventListener('click', ()=> {
-  clearAutoTimer(); goNext();
-});
-
-// auto advance scheduling: use runtime (minutes) if available & selected, else use manual delay
-function scheduleAutoAdvance(epRuntimeMinutes){
-  clearAutoTimer();
-  if (!autoAdvance.checked) return;
-  let delaySec = Number(advanceDelayInput.value) || 5;
-  if (useRuntime.checked && epRuntimeMinutes && epRuntimeMinutes>0) {
-    delaySec = epRuntimeMinutes * 60 + delaySec; // runtime + small buffer
-  }
-  console.log('auto advance scheduled in', delaySec, 's');
-  state.autoTimer = setTimeout(()=> {
-    goNext();
-  }, delaySec * 1000);
-}
-function clearAutoTimer(){
-  if (state.autoTimer) { clearTimeout(state.autoTimer); state.autoTimer = null; }
-}
-
-// keyboard shortcuts
-document.addEventListener('keydown', (e)=>{
-  if (e.key === 'ArrowLeft') { clearAutoTimer(); goPrev(); }
-  if (e.key === 'ArrowRight') { clearAutoTimer(); goNext(); }
-});
-
-// quick helper: if user pastes a TMDB id into the tmdb key as "remember this is simpsons id", we ignore — only the dedicated input is used
-// initial UX: hint for the user
-if (!localStorage.getItem('nf_hint_shown')) {
-  console.log('Hint: paste your TMDB API key into the top-right field to enable auto-loading of seasons/episodes.');
-  localStorage.setItem('nf_hint_shown','1');
-}
-
-// small safety: handle left clicks on episode grid to scroll active into view
-episodeGrid.addEventListener('click', (ev)=>{
-  const el = ev.target.closest('.ep-card');
-  if (el) el.scrollIntoView({behavior:'smooth',block:'center'});
-});
-
+  init();
 </script>
+
 </body>
 </html>
